@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odczyt tekstu w konsoli</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Wprowadź coś:</h1>
+    <input type="text" id="inputField" placeholder="Wpisz coś tutaj...">
+    <button onclick="saveText()">Zapisz tekst</button>
+
+    <h2>Odczyt tekstu:</h2>
+    <input type="password" id="passwordField" placeholder="Wpisz hasło...">
+    <button onclick="readText()">Odczytaj tekst</button>
+    <p id="outputParagraph"></p>
+
+    <script>
+        const correctPassword = "mojeHaslo"; // Ustaw swoje hasło
+
+        function saveText() {
+            const input = document.getElementById("inputField").value;
+            localStorage.setItem("savedText", input); // Zapisuje tekst w localStorage
+            console.log("Zapisany tekst:", input); // Wyświetla zapisany tekst w konsoli
+            document.getElementById("inputField").value = ""; // Czyści pole tekstowe
+            alert("Tekst zapisany!");
+        }
+
+        function readText() {
+            const password = document.getElementById("passwordField").value;
+            const output = document.getElementById("outputParagraph");
+
+            if (password === correctPassword) {
+                const savedText = localStorage.getItem("savedText"); // Odczytuje tekst z localStorage
+                output.innerText = savedText ? savedText : "Brak zapisanego tekstu."; // Wyświetla tekst lub komunikat
+                console.log("Odczytany tekst:", savedText); // Wyświetla odczytany tekst w konsoli
+            } else {
+                output.innerText = "Niepoprawne hasło!"; // Komunikat o błędnym haśle
+            }
+        }
+    </script>
+
+</body>
+</html>
