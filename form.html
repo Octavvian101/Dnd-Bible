@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Odczyt tekstu w konsoli</title>
+    <title>Odczyt tekstu w konsoli z Firebase</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
         }
     </style>
+    <!-- Dodaj skrypty Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database.js"></script>
 </head>
 <body>
 
@@ -23,14 +26,34 @@
     <p id="outputParagraph"></p>
 
     <script>
+        // Konfiguracja Firebase
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        // Inicjalizacja Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
         const correctPassword = "mojeHaslo"; // Ustaw swoje hasło
 
         function saveText() {
             const input = document.getElementById("inputField").value;
-            localStorage.setItem("savedText", input); // Zapisuje tekst w localStorage
-            console.log("Zapisany tekst:", input); // Wyświetla zapisany tekst w konsoli
-            document.getElementById("inputField").value = ""; // Czyści pole tekstowe
-            alert("Tekst zapisany!");
+            database.ref('savedText').set(input) // Zapisuje tekst w bazie danych
+                .then(() => {
+                    console.log("Zapisany tekst:", input);
+                    document.getElementById("inputField").value = ""; // Czyści pole tekstowe
+                    alert("Tekst zapisany!");
+                })
+                .catch((error) => {
+                    console.error("Błąd zapisu:", error);
+                });
         }
 
         function readText() {
@@ -38,11 +61,15 @@
             const output = document.getElementById("outputParagraph");
 
             if (password === correctPassword) {
-                const savedText = localStorage.getItem("savedText"); // Odczytuje tekst z localStorage
-                output.innerText = savedText ? savedText : "Brak zapisanego tekstu."; // Wyświetla tekst lub komunikat
-                console.log("Odczytany tekst:", savedText); // Wyświetla odczytany tekst w konsoli
+                database.ref('savedText').once('value').then((snapshot) => {
+                    const savedText = snapshot.val(); // Odczytuje tekst z bazy danych
+                    output.innerText = savedText ? savedText : "Brak zapisanego tekstu.";
+                    console.log("Odczytany tekst:", savedText);
+                }).catch((error) => {
+                    console.error("Błąd odczytu:", error);
+                });
             } else {
-                output.innerText = "Niepoprawne hasło!"; // Komunikat o błędnym haśle
+                output.innerText = "Niepoprawne hasło!";
             }
         }
     </script>
